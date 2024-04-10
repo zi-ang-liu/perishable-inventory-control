@@ -40,8 +40,8 @@ if __name__ == '__main__':
     unit_hold_cost = 1
     unit_perish_cost = 7
     unit_order_cost = 3
-    max_order = 5
-    mean_demand = 5
+    max_order = 20
+    mean_demand = 15
 
     # set gamma
     gamma = 0.99
