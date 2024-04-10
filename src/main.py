@@ -42,7 +42,6 @@ if __name__ == '__main__':
     unit_order_cost = 3
     max_order = 5
     mean_demand = 5
-    cv = 0.5
 
     # set gamma
     gamma = 0.99
@@ -56,7 +55,6 @@ if __name__ == '__main__':
         'unit_order_cost': unit_order_cost,
         'max_order': max_order,
         'mean_demand': mean_demand,
-        'cv': cv
     }
 
     dynamics, state_space, action_space, value, policy = build_dynamics_fifo(
@@ -76,8 +74,7 @@ if __name__ == '__main__':
 
     # value iteration
     value, policy = value_iteration(dynamics, state_space, action_space,
-                        value, policy, theta=1e-5, gamma=0.99)
-
+                        value, policy, theta=1e-5, gamma=gamma)
 
     for state in state_space:
         best_value = -np.inf
@@ -92,13 +89,13 @@ if __name__ == '__main__':
     # 2-dimensional plot
     if life_time + lead_time == 2:
         # plot policy
-        ax = sns.heatmap(policy, annot=True, fmt="d")
+        ax = sns.heatmap(policy, annot=True, fmt="d", cmap="viridis")
         ax.invert_yaxis()
         plt.title('Policy')
         plt.show()
 
         # plot state value
-        ax = sns.heatmap(value, annot=True, fmt=".2f")
+        ax = sns.heatmap(value, annot=True, fmt=".2f", cmap="viridis")
         ax.invert_yaxis()
         plt.title('State Value')
         plt.show()

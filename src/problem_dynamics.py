@@ -1,10 +1,8 @@
 # this code builds the dynamics of the single echelon perishable inventory problem
 # value iteration is used to solve the problem
 
-import matplotlib.pyplot as plt
 import numpy as np
-import seaborn as sns
-from scipy.stats import gamma
+from scipy.stats import poisson
 from itertools import product
 
 
@@ -18,25 +16,19 @@ def build_dynamics_fifo(parameters):
     unit_order_cost = parameters['unit_order_cost']
     max_order = parameters['max_order']
     mean_demand = parameters['mean_demand']
-    cv = parameters['cv']
 
     # parameter for gamma distribution
     EPSILON = 1e-4
 
-    # Calculate variance
-    variance = (cv * mean_demand) ** 2
-    # Calculate shape and scale parameters
-    shape = (mean_demand ** 2) / variance
-    scale = variance / mean_demand
-
     # find the maximum demand
-    max_demand = int(gamma.ppf(1-EPSILON, shape, scale=scale))
+    max_demand = int(poisson.ppf(1 - EPSILON, mean_demand))
 
     # build state space, state contains life_time+lead_time elements, each element is up to max_order
     state_space = []
     element_values = list(range(max_order + 1))
     state_elements = [element_values] * (life_time + lead_time)
 
+    # generate all possible states
     for state in product(*state_elements):
         state_space.append(state)
 
@@ -50,14 +42,10 @@ def build_dynamics_fifo(parameters):
     demand_prob = {}
     # transform gamma distribution to discrete distribution, round to nearest integer
     for demand in range(max_demand + 1):
-        if demand == 0:
-            demand_prob[demand] = gamma.cdf(0.5, shape, scale=scale)
-        elif demand == max_demand:
-            demand_prob[demand] = 1 - \
-                gamma.cdf(max_demand - 0.5, shape, scale=scale)
+        if demand == max_demand:
+            demand_prob[demand] = 1 - sum(demand_prob.values())
         else:
-            demand_prob[demand] = gamma.cdf(
-                demand + 0.5, shape, scale=scale) - gamma.cdf(demand - 0.5, shape, scale=scale)
+            demand_prob[demand] = poisson.pmf(demand, mean_demand)
 
     assert sum(demand_prob.values()
                ) == 1, 'demand probability does not sum to 1'
