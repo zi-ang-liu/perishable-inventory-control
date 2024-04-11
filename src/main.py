@@ -40,8 +40,8 @@ if __name__ == '__main__':
     unit_hold_cost = 1
     unit_perish_cost = 7
     unit_order_cost = 3
-    max_order = 20
-    mean_demand = 15
+    max_order = 10
+    mean_demand = 7
 
     # set gamma
     gamma = 0.99
@@ -92,6 +92,8 @@ if __name__ == '__main__':
         ax = sns.heatmap(policy, annot=True, fmt="d", cmap="viridis")
         ax.invert_yaxis()
         plt.title('Policy')
+        plt.xlabel('Inventory level at age 2')
+        plt.ylabel('Inventory level at age 1')
         plt.show()
 
         # plot state value
@@ -99,3 +101,13 @@ if __name__ == '__main__':
         ax.invert_yaxis()
         plt.title('State Value')
         plt.show()
+
+    # 3-dimensional plot
+    elif life_time + lead_time == 3:
+        # plot 3D box surface plot
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        x = np.arange(len(state_space))
+        y = np.arange(len(state_space))
+        x, y = np.meshgrid(x, y)
+        # https://www.youtube.com/watch?v=ODG2fYCOa28
